@@ -9,7 +9,7 @@
 
 #### On Ubuntu16.04+
 ```shell
-curl -L https://download.softbasic.org/softbasic-micro-admin/latest/softbasic-micro >/tmp/softbasic-micro && chmod +x /tmp/softbasic-micro && cp /tmp/softbasic-micro /usr/local/bin/softbasic-micro
+curl -L http://download.softbasic.org/softbasic-micro-admin/latest/softbasic-micro >/tmp/softbasic-micro && chmod +x /tmp/softbasic-micro && cp /tmp/softbasic-micro /usr/local/bin/softbasic-micro
 ```
 
 ## 使用方法
