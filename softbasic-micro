@@ -1,0 +1,66 @@
+#!/bin/sh
+method=$1
+filename=$2
+echo "读取到配置文件${filename}"
+while read line
+  do
+    k=${line%: *}
+    v=${line#*: }
+    if [ "${k}" = "projectName" ];then projectName=$v
+    elif [ "${k}" = "remoteUrl" ]; then remoteUrl=$v
+    elif [ "${k}" = "srcPath" ]; then srcPath=$v
+    elif [ "${k}" = "projectPath" ]; then projectPath=$v
+    elif [ "${k}" = "jarName" ]; then jarName=$v
+    fi
+done < ${filename}
+
+
+echo "${projectName}------${srcPath}"
+
+if [ ${method} = "deploy"  ];then
+	newSrcPath="$srcPath$projectName"
+	newProjectPath="$projectPath$projectName"
+
+	if [ ! -d $newSrcPath ];then mkdir -p $newSrcPath
+	fi
+
+	if [ ! -d $newProjectPath ];then mkdir -p $newProjectPath
+	fi
+	
+	cd $newSrcPath
+	git init
+	git remote add origin $remoteUrl
+	git pull origin master
+	
+	mvn clean package
+	
+	cd ./target
+	
+	jarpath="${newProjectPath}/${jarName}.jar"
+	
+	echo "${jarpath}"
+	
+	cp *.jar $jarpath
+elif [ ${method} = "start" -o ${method} = "restart"  ];then
+	newJarFile="${projectPath}${projectName}/${jarName}.jar"
+
+	echo "${newJarFile}"
+
+	PID=$(ps aux | grep ${jarName}.jar  | grep -v 'grep' | awk '{print $2}')
+
+	if [ ! "${PID}" = ''  ];then kill -9 $PID
+	fi
+
+	java -jar $newJarFile & > $jarName.log
+elif [ ${method} = "stop"  ];then
+	newJarFile="${projectPath}${projectName}/${jarName}.jar"
+
+        echo "${newJarFile}"
+
+        PID=$(ps aux | grep ${jarName}.jar  | grep -v 'grep' | awk '{print $2}')
+
+        if [ ! "${PID}" = ''  ];then kill -9 $PID
+	fi
+fi
+
+echo "successful"

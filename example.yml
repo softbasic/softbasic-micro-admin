@@ -1,0 +1,5 @@
+projectName: micro-core
+remoteUrl: https://github.com/softbasic/micro-core.git
+srcPath: /root/project/source/
+projectPath: /root/project/
+jarName: micro-core
