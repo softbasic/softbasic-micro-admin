@@ -14,32 +14,35 @@ curl -L http://download.softbasic.org/softbasic-micro-admin/latest/softbasic-mic
 
 ## 使用方法
 
-##### 部署，更新代码重新打包
+##### 下载示例配置文件
 ````shell
-softbasic-micro deploy example.yaml
+curl http://download.softbasic.org/softbasic-micro-admin/latest/example.yml >/opt/project/example/example.yml
+````
+
+
+##### 部署，更新代码重新打包，重启项目
+````shell
+softbasic-micro deploy example.yml
 ````
 
 ##### 启动项目
 ````shell
-softbasic-micro start example.yaml
+softbasic-micro start example.yml
 ````
 
 ##### 重启项目
 ````shell
-softbasic-micro restart example.yaml
+softbasic-micro restart example.yml
 ````
 
 ##### 停止项目
 ````shell
-softbasic-micro stop example.yaml
+softbasic-micro stop example.yml
 ````
 
 
 ## 项目配置参数
 ```asp
-1、项目名:projectName
-2、GIT远程仓库地址:remoteUrl
-3、GIT源码的本地副本地址:srcPath,默认:/opt/project/source/$projectName
-4、项目安装运行的目录:projectPath,默认：/opt/project/$projectName
-5、程序打包的JAR名：jarName,默认:app.jar
+1、项目名:projectName，可空
+2、GIT远程仓库地址:remoteUrl，必填
 ```

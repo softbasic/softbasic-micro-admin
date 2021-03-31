@@ -99,4 +99,4 @@ elif [ ${method} = "stop"  ];then
 	fi
 fi
 
-echo "successful"
+echo "successfully"
