@@ -1,25 +1,50 @@
 #!/bin/sh
 method=$1
 filename=$2
-echo "读取到配置文件${filename}"
-while read line
-  do
-    k=${line%: *}
-    v=${line#*: }
-    if [ "${k}" = "projectName" ];then projectName=$v
-    elif [ "${k}" = "remoteUrl" ]; then remoteUrl=$v
-    elif [ "${k}" = "srcPath" ]; then srcPath=$v
-    elif [ "${k}" = "projectPath" ]; then projectPath=$v
-    elif [ "${k}" = "jarName" ]; then jarName=$v
-    fi
-done < ${filename}
+echo "$3"
+if [ -z "${method}" ];then
+echo "缺少参数"
+exit
+fi
 
+if [ -z "${filename}" ];then
+        echo "没有设置配置文件"
+        exit
+elif [ ! -f ${filename}  ];then
+        echo "文件不存在"
+        exit
+elif [ -f ${filename} ];then
+        while read line
+        do
+          k=${line%: *}
+          v=${line#*: }
+          if [ "${k}" = "projectName" ];then projectName=$v
+          elif [ "${k}" = "remoteUrl" ]; then remoteUrl=$v
+          fi
+        done < ${filename}
+        echo "读取到配置文件${filename}"
+fi
 
-echo "${projectName}------${srcPath}"
+if [ -z "${remoteUrl}" ];then
+        echo "项目远程地址为必须参数"
+        exit
+fi
+
+if [ -z "${projectName}" ];then
+        remoteUrl=https://github.com/softbasic/softbasic-micro-core.git
+        newUrl=${remoteUrl##*/}
+        projectName=${newUrl%%.*}
+        echo "项目名称为空,${projectName}"
+fi
+
+srcBasePath="/opt/project/source/"
+projectBasePath="/opt/project/"
+jarName="${projectName}" 
+echo "${projectName}------${srcBasePath}"
 
 if [ ${method} = "deploy"  ];then
-	newSrcPath="$srcPath$projectName"
-	newProjectPath="$projectPath$projectName"
+	newSrcPath="$srcBasePath$projectName"
+	newProjectPath="$projectBasePath$projectName"
 
 	if [ ! -d $newSrcPath ];then mkdir -p $newSrcPath
 	fi
@@ -41,8 +66,18 @@ if [ ${method} = "deploy"  ];then
 	echo "${jarpath}"
 	
 	cp *.jar $jarpath
+
+	cd ${newProjectPath}
+
+	PID=$(ps aux | grep ${jarName}.jar  | grep -v 'grep' | awk '{print $2}')
+
+        if [ ! "${PID}" = ''  ];then kill -9 $PID
+        fi
+
+	nohup java -jar $jarpath > /dev/null &
+	sleep 2s
 elif [ ${method} = "start" -o ${method} = "restart"  ];then
-	newJarFile="${projectPath}${projectName}/${jarName}.jar"
+	newJarFile="${projectBasePath}${projectName}/${jarName}.jar"
 
 	echo "${newJarFile}"
 
@@ -51,9 +86,10 @@ elif [ ${method} = "start" -o ${method} = "restart"  ];then
 	if [ ! "${PID}" = ''  ];then kill -9 $PID
 	fi
 
-	java -jar $newJarFile & > $jarName.log
+	nohup java -jar $newJarFile > /dev/null &
+	sleep 2s
 elif [ ${method} = "stop"  ];then
-	newJarFile="${projectPath}${projectName}/${jarName}.jar"
+	newJarFile="${projectBasePath}${projectName}/${jarName}.jar"
 
         echo "${newJarFile}"
 
