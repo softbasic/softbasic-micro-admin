@@ -1,5 +1,5 @@
 # softbasic-micro-admin
-基于softbasic-micro-core框架项目的运维工具
+对softbasic-micro-core项目的运维工具
 
 项目名为softbasic-micro-admin，研发对微服务项目的运维、管理工具，命令以softbasic-micro命名，而不是带着admin，为的是简化日常管理的命令复杂度。
 
